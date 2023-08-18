@@ -1,7 +1,8 @@
 /** src/@types/user.d.ts */
+import uuid from 'uuid';
 
 interface Iuser {
-  typeId: int;
+  type: IuserType;
   facialId: string;
   name: string;
   email: string;

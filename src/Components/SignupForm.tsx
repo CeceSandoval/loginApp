@@ -35,22 +35,23 @@ const SignupForm = () => {
   //create  a submit function that will submit the data
   const onSubmit = (data: Iuser) => {
     alert(JSON.stringify(data));
-
-    handleSignUp(data.name, data.email);
-    handleSignUpBack(data);
+    console.log("data:" + data)
+    handleSignUp(data);
+    
 
   };
 
   //create a signup function that will submit the data to faceIO by calling the function faceIO enroll
-  const handleSignUp = async (name: string, email:string): Promise<any> => {
+  const handleSignUp = async (data: Iuser): Promise<any> => {
     try {
+      console.log("face", data)
       let response: any = await faceio.enroll({
         locale: 'auto',
         payload: {
           // typeId: 3,
           // facialId: `${user.facialId}`,
-          name: `${name}`,
-          email: `${email}`,
+          name: `${data.name}`,
+          email: `${data.email}`,
           // identificationNumber:`${user.identificationNumber}`,
           // licensePlate:  `${user.licensePlate}`,
           // carModel:`${user.carModel}`,
@@ -63,6 +64,19 @@ const SignupForm = () => {
       edad aproximada: ${response.details.age}
       payload: ${JSON.stringify(response.details)}`
       );
+      const newData: Iuser = {
+        type: {
+          id: 3,
+          type : ""
+        },
+        facialId: response.facialId,
+        name: data.name,
+        email: data.email,
+        identificationNumber: data.identificationNumber,
+        licensePlate: data.licensePlate,
+        carModel: data.carModel
+      }
+      handleSignUpBack(newData);
 
     } catch (error) {
       alert('Ya te has registrado con este email');
@@ -72,7 +86,7 @@ const SignupForm = () => {
   const handleSignUpBack = async (userData: Iuser): Promise<void> => {
     try {
       // Realizar la llamada a la API para registrar el usuario en el backend
-      const response = await axios.post('localhost:8080/drivers/dccdbdaf-3a5e-4fb9-b1cd-1318b889147e', userData);
+      const response = await axios.post('http://localhost:8080/api/signup', userData);
   
       if (response.status === 200) {
         console.log('Usuario registrado exitosamente en el backend:', response.data);
