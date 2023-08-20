@@ -28,8 +28,9 @@ const Login = () => {
           `);
 
       dispatch({ type: actionTypes.SET_USER, user: response.payload });
-
       alert("Has iniciado sesión exitosamente");
+      console.log(response.payload);
+      handleLoginBack(response.facialId);
     } catch (error) {
       console.log(error);
       alert(
@@ -45,6 +46,21 @@ const Login = () => {
       ).catch(error => {console.log(error)});
     
   }
+
+  const handleLoginBack = async (userId : string): Promise<void> => {
+    try {
+      // Realizar la llamada a la API para registrar el usuario en el backend
+      const response = await axios.post(`http://localhost:8080/create-session/${userId}`);
+  
+      if (response.status === 200) {
+        console.log('Sesión iniciada:', response.data);
+      } else {
+        console.error('Error al iniciar sesión');
+      }
+    } catch (error) {
+      console.error('Error en la llamada al backend:', error);
+    }
+  };
 
   return (
 
