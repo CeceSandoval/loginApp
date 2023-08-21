@@ -2,12 +2,12 @@ import { useContext } from 'react';
 import Login from '../Components/Login';
 import { userContext } from '../context/StateProvider';
 
-const Home = () => {
+const Admin = () => {
   const { state } = useContext(userContext);
 
   return (
     <div className='min-h-screen flex flex-col '>
-      {!state?.user ? (
+      {(!state?.session  && state.session?.userType =="admin")? (
         <Login />
       ) : (
         <div>
@@ -16,7 +16,7 @@ const Home = () => {
           </h1>
 
           <h2 className='text-blue-900 pt-28 font-bold'>
-            Welcome {state.user.name} Email:{state.user.email}
+            Welcome
           </h2>
         </div>
       )}

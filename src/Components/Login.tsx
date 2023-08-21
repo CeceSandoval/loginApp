@@ -2,7 +2,9 @@ import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { userContext } from "../context/StateProvider";
 import { actionTypes } from "../helpers/Reducers";
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
+import { Issesion } from "../@types/session";
+import { Iuser } from "../@types/user";
 
 const Login = () => {
   //we load faceIO using a useEffect hook
@@ -27,10 +29,12 @@ const Login = () => {
                 Data: ${JSON.stringify(response.payload)}
           `);
 
-      dispatch({ type: actionTypes.SET_USER, user: response.payload });
+      
       alert("Has iniciado sesión exitosamente");
       console.log(response.payload);
+      
       handleLoginBack(response.facialId);
+
     } catch (error) {
       console.log(error);
       alert(
@@ -39,27 +43,26 @@ const Login = () => {
     }
   };
 
-  function llamarBackend(): void {
-    axios.get('http://localhost:8080/drivers/40d1f388-b8e8-409b-9289-5c5dc1ad153e').then(Response=> {
-      console.log("HEY hereeee   "+ Response.data);
-    }
-      ).catch(error => {console.log(error)});
-    
-  }
-
   const handleLoginBack = async (userId : string): Promise<void> => {
     try {
       // Realizar la llamada a la API para registrar el usuario en el backend
-      const response = await axios.post(`http://localhost:8080/create-session/${userId}`);
-  
-      if (response.status === 200) {
-        console.log('Sesión iniciada:', response.data);
+      const Response = await axios.post(`http://localhost:8080/create-session/${userId}`);
+      console.log("Datos de respuesta del back: "+ JSON.stringify(Response))
+      const data : Issesion = {
+        id: Response.data.id,
+        userId: Response.data.userId,
+        userType: Response.data.userType,
+      }
+      if (Response.status === 200) {
+        dispatch({ type: actionTypes.SET_SESSION, session: data});
+        console.log('Sesión iniciada:', Response.data);
       } else {
         console.error('Error al iniciar sesión');
       }
     } catch (error) {
       console.error('Error en la llamada al backend:', error);
     }
+
   };
 
   return (
@@ -102,9 +105,6 @@ const Login = () => {
         </p>
       </div>
 
-      <button onClick={llamarBackend} className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-500 hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition duration-300 ease-in-out">
-            PRUEBA
-      </button>
 
 </div>
 

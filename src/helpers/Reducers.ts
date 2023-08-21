@@ -1,15 +1,15 @@
-import { userContextType, Action } from '../@types/user';
+import { userContextType, Action } from '../@types/session';
 
 
 //the initial state of the user
 export const initialState = {
-  user: null,
+  session: null
 };
 
 
 //the action we are going to take when we login that is set the user
 export const actionTypes = {
-  SET_USER: 'SET_USER',
+  SET_SESSION: 'SET_SESSION',
 };
 
 
@@ -17,12 +17,15 @@ export const actionTypes = {
 export const reducer = (state: userContextType, action: Action) => {
   console.log(action);
   switch (action.type) {
-    case actionTypes.SET_USER:
+    case actionTypes.SET_SESSION:
       return {
         ...state,
-        user: action.user,
+          session: action.session,
       };
     default:
       return state;
   }
 };
+
+
+

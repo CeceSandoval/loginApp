@@ -1,24 +1,24 @@
 import React, { useEffect } from 'react';
-
+import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { Iuser} from '../@types/user';
+import { Iuser } from '../@types/user';
 
 
 const SignupSchema = yup
   .object({
-    typeId: yup.number().required(),
-    facialId: yup.string().required(),
+    // typeId: yup.number().required(),
+    // facialId: yup.string().required(),
     name: yup.string().required(),
     email: yup.string().required(),
-    identificationNumber: yup.string().required(),
-    licensePlate: yup.string().required(),
-    carModel: yup.string().required(),
+    // identificationNumber: yup.string().required(),
+    // licensePlate: yup.string().required(),
+    // carModel: yup.string().required(),
   })
   .required();
 
-const SignupFormPassenger = () => {
+const SignupForm = () => {
   let faceio: any;
   useEffect(() => {
     faceio = new faceIO('fioa7a55');
@@ -35,23 +35,26 @@ const SignupFormPassenger = () => {
   //create  a submit function that will submit the data
   const onSubmit = (data: Iuser) => {
     alert(JSON.stringify(data));
-
+    console.log("data:" + data)
     handleSignUp(data);
+    
+
   };
 
   //create a signup function that will submit the data to faceIO by calling the function faceIO enroll
-  const handleSignUp = async (Iuser: Iuser): Promise<any> => {
+  const handleSignUp = async (data: Iuser): Promise<any> => {
     try {
+      console.log("face", data)
       let response: any = await faceio.enroll({
         locale: 'auto',
         payload: {
-          typeId: 2,
-          facialId: `${Iuser.facialId}`,
-          name: `${Iuser.name}`,
-          email: `${Iuser.email}`,
-          identificationNumber:`${Iuser.identificationNumber}`,
-          licensePlate: null,
-          carModel: null,
+          // typeId: 3,
+          // facialId: `${user.facialId}`,
+          name: `${data.name}`,
+          email: `${data.email}`,
+          // identificationNumber:`${user.identificationNumber}`,
+          // licensePlate:  `${user.licensePlate}`,
+          // carModel:`${user.carModel}`,
         },
       });
       alert(
@@ -61,8 +64,38 @@ const SignupFormPassenger = () => {
       edad aproximada: ${response.details.age}
       payload: ${JSON.stringify(response.details)}`
       );
+      const newData: Iuser = {
+        type: {
+          id: 2,
+          type : ""
+        },
+        facialId: response.facialId,
+        name: data.name,
+        email: data.email,
+        identificationNumber: data.identificationNumber,
+        licensePlate: "",
+        carModel: ""
+      }
+      handleSignUpBack(newData);
+
     } catch (error) {
       alert('Ya te has registrado con este email');
+    }
+  };
+
+  const handleSignUpBack = async (userData: Iuser): Promise<void> => {
+    try {
+      // Realizar la llamada a la API para registrar el usuario en el backend
+      const response = await axios.post('http://localhost:8080/api/signup', userData);
+  
+      if (response.status === 200) {
+        console.log('Usuario registrado exitosamente en el backend:', response.data);
+      } else {
+        console.error('Error al registrar usuario en el backend');
+      }
+    } catch (error) {
+      console.error('Error en la llamada al backend:', error);
+      console.log(userData);
     }
   };
 
@@ -123,8 +156,6 @@ const SignupFormPassenger = () => {
             <p className='text-red-700'>{errors.email.message}</p>
           )}
         </div>
-
-       
         <div>
           <button className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-500 hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition duration-300 ease-in-out">
             Registrarse
@@ -135,4 +166,4 @@ const SignupFormPassenger = () => {
   );
 };
 
-export default SignupFormPassenger;
+export default SignupForm;

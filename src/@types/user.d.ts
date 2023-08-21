@@ -11,11 +11,3 @@ interface Iuser {
   carModel: string;
 }
 
-export type userContextType = {
-  user: Iuser | null;
-};
-
-type Action = {
-  type: 'SET_USER';
-  user: Iuser;
-};

@@ -1,5 +1,5 @@
 import React, { createContext, ReactNode, useReducer } from 'react';
-import { userContextType } from '../@types/user';
+import { userContextType } from '../@types/session';
 import { initialState, reducer } from '../helpers/Reducers';
 
 export const userContext = createContext<{
