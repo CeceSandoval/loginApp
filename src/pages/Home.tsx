@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import Login from '../Components/Login';
 import Map from '../Components//Map';
 import { userContext } from '../context/StateProvider';
+import Navbar from '../Components/Navbar';
 
 const Home = () => {
   const { state } = useContext(userContext);
@@ -12,17 +13,10 @@ const Home = () => {
         
         <Login />
       ) : ((state.session.userType == "driver" )? (
-        <div>
-          <h1 className='text-3xl font-bold text-yellow-600 flex justify-center items-center'>
-            Módulo de Autenticación biométrico en la blockchain Ethereum
-          </h1>
-
-          <h2 className='text-blue-900 pt-28 font-bold'>
-            Welcome conductor
-          </h2>
-
-          <h1>Selecciona al menos dos Puntos en el Mapa para generar tu ruta. </h1>
-          <Map />
+        
+        <div className="flex flex-col  h-screen w-screen bg-gradient-to-br from-teal-500 to-blue-900">
+            <Navbar />
+            <Map />
         </div>
       ):(
         <div>
@@ -34,7 +28,6 @@ const Home = () => {
             Welcome pasajero
           </h2>
 
-          <h1>Selecciona al menos dos Puntos en el Mapa para generar tu ruta. </h1>
           <Map />
         </div>
       )
