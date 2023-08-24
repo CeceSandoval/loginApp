@@ -1,8 +1,31 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import Map from '../Components//Map';
+import { userContext } from '../context/StateProvider';
+import axios from 'axios';
+import { actionTypes } from '../helpers/Reducers';
 
 const Navbar = () => {
- 
+  const { state } = useContext(userContext)
+  const [isLoading, setIsLoading] = useState(false);
+  const { dispatch } = useContext(userContext);
+
+  const closeSession = async (): Promise<void> => {
+    try {
+      setIsLoading(true);
+      // Realizar la llamada a la API para registrar el usuario en el backend
+      const Response = await axios.delete(`http://localhost:8080/delete-session/${state.session?.id}`);
+      
+      if (Response.status === 200) {
+        dispatch({ type: actionTypes.SET_SESSION, session: null});
+        window.location.href = '/';
+        console.log('Sesión cerrada:', Response.data);
+      } else {
+        console.error('Error al cerrar sesión');
+      }
+    } catch (error) {
+      console.error('Error en la llamada al backend:', error);
+    }
+  };
   return (
     
     <nav className="flex items-center justify-between flex-wrap blue-900 p-6">
@@ -39,12 +62,11 @@ const Navbar = () => {
           </a>
         </div>
         <div>
-          <a
-            href="#"
+          <button
             className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0"
-          >
+            onClick={closeSession} disabled={isLoading}>
             Cerrar Sesión
-          </a>
+          </button>
         </div>
       </div>
     </nav>

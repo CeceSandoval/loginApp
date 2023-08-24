@@ -1,10 +1,8 @@
 import React from 'react';
 
 interface PopupFormProps {
-  onClose: () => void;
+  onClose: (formData: any) => void;
 }
-
-
 
 const PopupForm: React.FC<PopupFormProps> = ({ onClose }) => {
     const handleSubmit = (event: React.FormEvent) => {
@@ -24,7 +22,7 @@ const PopupForm: React.FC<PopupFormProps> = ({ onClose }) => {
         const timestamp = new Date(`${fecha} ${hora}`).getTime()/1000; // Generar timestamp
     
       alert( typeof(timestamp)+' fdjsf ' + timestamp);
-      onClose();
+      onClose(timestamp);
     };
 
   return (
