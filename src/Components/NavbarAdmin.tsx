@@ -3,11 +3,55 @@ import Map from '../Components//Map';
 import { userContext } from '../context/StateProvider';
 import axios from 'axios';
 import { actionTypes } from '../helpers/Reducers';
+import Passengers from './Passengers';
 
-const NavbarAdmin = () => {
+interface NavbarAdminProps {
+    setShowPassengers: React.Dispatch<React.SetStateAction<boolean>>;
+    setShowDrivers: React.Dispatch<React.SetStateAction<boolean>>;
+  }
+const NavbarAdmin : React.FC<NavbarAdminProps>  = ({ setShowPassengers, setShowDrivers }) => {
   const { state } = useContext(userContext)
   const [isLoading, setIsLoading] = useState(false);
   const { dispatch } = useContext(userContext);
+
+  const listDriver = async () => {
+    if (!isLoading) {
+      try {
+        setIsLoading(true);
+        // Puedes realizar cualquier lógica adicional aquí, como hacer una llamada a una API
+
+        // Simulando una espera para mostrar un efecto de carga
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        setShowPassengers(false);
+        setShowDrivers(true);
+
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+  const listPassenger = async () => {
+    if (!isLoading) {
+      try {
+        setIsLoading(true);
+        // Puedes realizar cualquier lógica adicional aquí, como hacer una llamada a una API
+
+        // Simulando una espera para mostrar un efecto de carga
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        setShowPassengers(true);
+        setShowDrivers(false);
+
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
 
   const closeSession = async (): Promise<void> => {
     try {
@@ -56,14 +100,14 @@ const NavbarAdmin = () => {
         <div className="text-sm lg:flex-grow">
         <button
             className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0"
-            onClick={closeSession} disabled={isLoading}>
+            onClick={listPassenger} disabled={isLoading}>
             Lista de pasajeros
           </button>
         </div>
         <div className="text-sm lg:flex-grow">
         <button
             className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0"
-            onClick={closeSession} disabled={isLoading}>
+            onClick={listDriver} disabled={isLoading}>
             Lista de conductor
           </button>
         </div>

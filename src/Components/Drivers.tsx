@@ -31,34 +31,40 @@ const Drivers = () => {
         }
     };
     return (
-        <div >
-            <h2>Lista de Usuarios Conductores:</h2>
-            <div  style={{ display: 'flex', flexDirection: 'column', backgroundColor: 'white',  width: '100%'}}>
-            <table style={{ width: '90%', overflowY: 'auto', backgroundColor: 'gray' }}>
-                <thead>
-                    <tr>
-                        <th style={{ border: '1px solid gray', padding: '8px', textAlign: 'center'}}>Nombre de Usuario</th>
-                        <th style={{ border: '1px solid gray', padding: '8px', textAlign: 'center' }}>Correo</th>
-                        <th style={{ border: '1px solid gray', padding: '8px', textAlign: 'center' }}>Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {users.map(user => (
-                        <tr key={user.id}>
-                            <td style={{ textAlign: 'center' }}>{user.name}</td>
-                            <td style={{ textAlign: 'center' }}>{user.email}</td>
-                            <td style={{ textAlign: 'center' }}>
-                                <button onClick={() => handleToggleUser(user.id, !user.enabled)}>
-                                    {user.enabled ? 'Deshabilitar' : 'Habilitar'}
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-            </div>
-            
+        <div className="bg-gradient-to-br from-teal-500 to-blue-900 p-4">
+        <h2 className="text-2xl font-bold text-white mb-4">
+          Lista de Usuarios Conductores
+        </h2>
+        <div className="flex flex-col bg-white p-4 rounded-lg w-full">
+          <table className="w-full overflow-y-auto">
+            <thead>
+              <tr className="bg-gray-300">
+                <th className="border p-2 text-center">Nombre de Usuario</th>
+                <th className="border p-2 text-center">Correo</th>
+                <th className="border p-2 text-center">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user) => (
+                <tr key={user.id} className="border">
+                  <td className="p-2 text-center">{user.name}</td>
+                  <td className="p-2 text-center">{user.email}</td>
+                  <td className="p-2 text-center">
+                    <button
+                      onClick={() => handleToggleUser(user.id, !user.enabled)}
+                      className={`text-${
+                        user.enabled ? "red" : "green"
+                      } py-1 px-3 rounded`}
+                    >
+                      {user.enabled ? "Deshabilitar" : "Habilitar"}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+      </div>
     );
 };
 
