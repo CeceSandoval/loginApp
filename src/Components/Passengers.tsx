@@ -41,6 +41,7 @@ const Passengers = () => {
               <tr className="bg-gray-300">
                 <th className="border p-2 text-center">Nombre de Usuario</th>
                 <th className="border p-2 text-center">Correo</th>
+                <th className="border p-2 text-center">Caificación</th>
                 <th className="border p-2 text-center">Acción</th>
               </tr>
             </thead>
@@ -49,6 +50,7 @@ const Passengers = () => {
                 <tr key={user.id} className="border">
                   <td className="p-2 text-center">{user.name}</td>
                   <td className="p-2 text-center">{user.email}</td>
+                  <td className="p-2 text-center">{user.qualifying}</td>
                   <td className="p-2 text-center">
                     <button
                       onClick={() => handleToggleUser(user.id, !user.enabled)}

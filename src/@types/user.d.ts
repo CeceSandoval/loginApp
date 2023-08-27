@@ -9,5 +9,6 @@ interface Iuser {
   identificationNumber: string;
   licensePlate: string;
   carModel: string;
+  qualifying: number;
 }
 

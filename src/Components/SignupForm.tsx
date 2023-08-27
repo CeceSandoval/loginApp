@@ -74,7 +74,8 @@ const SignupForm = () => {
         email: data.email,
         identificationNumber: data.identificationNumber,
         licensePlate: data.licensePlate,
-        carModel: data.carModel
+        carModel: data.carModel, 
+        qualifying: 0
       }
       handleSignUpBack(newData);
 
