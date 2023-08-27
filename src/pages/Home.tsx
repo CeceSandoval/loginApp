@@ -13,17 +13,18 @@ const Home = () => {
     <div className='min-h-screen flex flex-col '>
       {!state?.session  ? (
         
-        <Login />
+            <Login />
+            
       ) : ((state.session.userType === "driver" )? (
-        
         <div className="flex flex-col  h-screen w-screen bg-gradient-to-br from-teal-500 to-blue-900">
             <Driver/>
         </div>
-      ):(
-        <div className="flex flex-col  h-screen w-screen bg-gradient-to-br from-teal-500 to-blue-900">
-          <Passenger/>
 
-        </div>
+      ):( (state.session.userType === "passenger" )? (
+        <div className="flex flex-col  h-screen w-screen bg-gradient-to-br from-teal-500 to-blue-900">
+            <Passenger/>
+        </div> 
+        ):(<div></div>)
       )
       )}
     </div>
