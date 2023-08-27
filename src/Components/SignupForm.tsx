@@ -21,7 +21,7 @@ const SignupSchema = yup
 const SignupForm = () => {
   let faceio: any;
   useEffect(() => {
-    faceio = new faceIO('fioa7a55');
+    faceio = new faceIO('fioacede');
   }, []);
 
   const {
@@ -80,6 +80,7 @@ const SignupForm = () => {
 
     } catch (error) {
       alert('Ya te has registrado con este email');
+      console.log("hereee:  "+error)
     }
   };
 
