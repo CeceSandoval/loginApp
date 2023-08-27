@@ -55,29 +55,30 @@ const Map: React.FC = () => {
   };
 
   const handleGenerateRoute = () => {
-    if (markers.length < 2) {
-      alert('Por favor, seleccione al menos dos puntos en el mapa.');
-      
-      return;
-    }
+    if (markers.length !== 2) {
+        alert('Por favor, seleccione exactamente dos puntos en el mapa: origen y destino.');
+        setMarkers([]);
+        return;
+      }
     
+    const [origin, destination] = markers;
+  
     const directionsService = new google.maps.DirectionsService();
 
     directionsService.route(
-      {
-        origin: markers[0],
-        destination: markers[markers.length - 1],
-        waypoints: markers.slice(1, markers.length - 1).map(marker => ({ location: marker })),
-        travelMode: google.maps.TravelMode.DRIVING,
-      },
-      (result, status) => {
+        {
+            origin,
+            destination,
+            travelMode: google.maps.TravelMode.DRIVING,
+        },
+        (result, status) => {
         if (status === google.maps.DirectionsStatus.OK) {
-          setDirections(result);
-          setIsPopupOpen(true)
+            setDirections(result);
+            setIsPopupOpen(true);
         } else {
-          console.error('Error al generar la ruta:', status);
+            console.error('Error al generar la ruta:', status);
         }
-      }
+        }
     );
   };
  
