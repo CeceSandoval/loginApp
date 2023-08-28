@@ -1,14 +1,16 @@
-import React, { useContext, useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Map from '../Components//Map';
 import { userContext } from '../context/StateProvider';
 import axios from 'axios';
 import { actionTypes } from '../helpers/Reducers';
 
-const NavbarPassenger = () => {
+interface NavbarPassengerProps {
+  onProfileClick: () => void;
+}
+const NavbarPassenger: React.FC<NavbarPassengerProps> = ({ onProfileClick }) => {
   const { state } = useContext(userContext)
   const [isLoading, setIsLoading] = useState(false);
   const { dispatch } = useContext(userContext);
-
   const closeSession = async (): Promise<void> => {
     try {
       setIsLoading(true);
@@ -39,7 +41,7 @@ const NavbarPassenger = () => {
         >
           <path d="M13.5 22.1c1.8-7.2 6.3-10.8 13.5-10.8 10.8 0 12.15 8.1 17.55 9.45 3.6.9 6.75-.45 9.45-4.05-1.8 7.2-6.3 10.8-13.5 10.8-10.8 0-12.15-8.1-17.55-9.45-3.6-.9-6.75.45-9.45 4.05zM0 38.3c1.8-7.2 6.3-10.8 13.5-10.8 10.8 0 12.15 8.1 17.55 9.45 3.6.9 6.75-.45 9.45-4.05-1.8 7.2-6.3 10.8-13.5 10.8-10.8 0-12.15-8.1-17.55-9.45-3.6-.9-6.75.45-9.45 4.05z" />
         </svg>
-        <span className="font-semibold text-xl tracking-tight">GoToguether</span>
+        <span className="font-semibold text-xl tracking-tight">GoTogether</span>
       </div>
       <div className="block lg:hidden">
         <button className="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white">
@@ -53,12 +55,12 @@ const NavbarPassenger = () => {
         </button>
       </div>
       <div className="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
-        <div className="text-sm lg:flex-grow">
-        <button
-            className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0"
-            onClick={closeSession} disabled={isLoading}>
-            Perfil
-          </button>
+      <div className="text-sm lg:flex-grow">
+      <button
+          className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0"
+          onClick={onProfileClick} disabled={isLoading}>
+          Perfil
+        </button>
         </div>
         <div>
           <button
