@@ -31,7 +31,8 @@ const Map: React.FC = () => {
       email: "",
       identificationNumber: "",
       licensePlate: "",
-      carModel: ""
+      carModel: "", 
+      qualifying : 0
     },
     passengers : []
   });

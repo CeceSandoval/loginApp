@@ -74,7 +74,7 @@ const Login = () => {
     </button>
 
     <div className="text-white">
-      <p>
+      
         ¿Aún no tienes una cuenta? Regístrate como: {" "}
         <div className="flex justify-center">
           <Link
@@ -90,7 +90,7 @@ const Login = () => {
             Pasajero
           </Link>
         </div>
-      </p>
+      
     </div>
 
     <div className="text-white mt-10 text-xs">

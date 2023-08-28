@@ -3,6 +3,7 @@ import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from '@react-google
 import PopupForm from './PopupCrearRuta';
 import { userContext } from '../context/StateProvider';
 import axios from 'axios';
+import { IRoute } from '../@types/route';
 
 
 const containerStyle = {
@@ -17,6 +18,26 @@ const center = {
 
 const Map: React.FC = () => {
   const { state } = useContext(userContext);
+  const [route, setRoute] = useState<IRoute>({
+    id : null,
+    startTime : 0,
+    enabled : false,
+    driver : {
+      type:  {
+        id: 0,
+      type: ""
+      },
+      facialId: "",
+      name: "",
+      email: "",
+      identificationNumber: "",
+      licensePlate: "",
+      carModel: "",
+      qualifying : 0
+    },
+    passengers : [], 
+    
+  });
   
   const [markers, setMarkers] = useState<google.maps.LatLngLiteral[]>([]);
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
@@ -42,12 +63,13 @@ const Map: React.FC = () => {
     try {
       console.log(markers)
       // Realizar la llamada a la API para registrar el usuario en el backend
-      const Response = await axios.post(`http://localhost:8080/route/${state.session?.id}/${time}`, mark);
+      const Response = await axios.post(`http://localhost:8080/travel/${state.session?.id}/${time}`, mark);
       
       if (Response.status === 200) {
         console.log('Ruta creada:', Response.data);
+        setRoute(prevRoute => ({ ...prevRoute, ...Response.data }));
       } else {
-        console.error('Error al creaar ruta');
+        console.error('Error al crear viaje');
       }
     } catch (error) {
       console.error('Error en la llamada al backend:', error);
@@ -82,9 +104,21 @@ const Map: React.FC = () => {
     );
   };
  
-  const handleCancelRoute = () => {
-
-  }
+  const handleCancelRoute = async (): Promise<void> => {
+    try {
+      const Response = await axios.delete(`http://localhost:8080/travel/${state.session?.id}/${route.id}`);
+      
+      if (Response.status === 200) {
+        console.log('Ruta eliminada:', Response.data);
+        setMarkers([]);
+        setDirections(null);
+      } else {
+        console.error('Error al eliminar ruta');
+      }
+    } catch (error) {
+      console.error('Error en la llamada al backend:', error);
+    }
+  };
 
   return (
   
@@ -105,13 +139,14 @@ const Map: React.FC = () => {
       <button
         className="py-2 px-4 text-sm bg-blue-900 text-white rounded hover:bg-white hover:text-teal-500 border border-white hover:border-transparent"
         onClick={handleGenerateRoute}>
-        Generar Ruta
+        Encontrar ruta
         
       </button>
 
       <button
-        className="py-2 px-4 text-sm bg-red-700 text-white rounded hover:bg-white hover:text-teal-500 border border-white hover:border-transparent">
-        Cancelar Ruta
+        className="py-2 px-4 text-sm bg-red-700 text-white rounded hover:bg-white hover:text-teal-500 border border-white hover:border-transparent"
+        onClick={handleCancelRoute}>
+        Cancelar mi solicitud
       </button>
       {isPopupOpen && <PopupForm onClose={handlePopupSubmit} />}
     </div>
