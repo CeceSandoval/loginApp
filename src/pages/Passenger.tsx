@@ -5,6 +5,7 @@ import PopupDriver from '../Components/PopupDriver';
 import { userContext } from '../context/StateProvider';
 import NavbarPassenger from '../Components/NavbarPassenger';
 import PopupPassenger from '../Components/PopupPassenger';
+import MapPassenger from '../Components/MapPassenger';
 
 const Passenger = () => {
   const { state } = useContext(userContext);
@@ -18,7 +19,7 @@ const Passenger = () => {
     <div>
         {isPopupUserOpen && <PopupPassenger onClose={() => setIsPopupUserOpen(false)}  />}
         <NavbarPassenger onProfileClick={loadProfile} />
-        <Map />
+        <MapPassenger />
     </div>
   );
 };
