@@ -11,7 +11,7 @@ const Login = () => {
 
   let faceio: any;
   useEffect(() => {
-    faceio = new faceIO("fioacede");
+    faceio = new faceIO("fioa847a");
   }, []);
 
   //we use a useContext hook dispatch to be able to dispatch our user to the state

@@ -21,7 +21,7 @@ const SignupSchema = yup
 const SignupForm = () => {
   let faceio: any;
   useEffect(() => {
-    faceio = new faceIO('fioacede');
+    faceio = new faceIO('fioa847a');
   }, []);
 
   const {
