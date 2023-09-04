@@ -7,6 +7,7 @@ import { IRoute} from '../@types/route';
 import { Iuser } from '../@types/user';
 import { toast } from 'react-toastify';
 import PopupRoutesPassenger from './PopupRoutesPassenger';
+import PopupScorePassengers from './PopupScorePassengers';
 
 
 const containerStyle = {
@@ -49,6 +50,7 @@ const Map: React.FC = () => {
   const [showButtons, setShowButtons] = useState(false);
   const [isPopupPassengerOpen, setIsPopupPassengerOpen] = useState(false);
   const [popupRoute, setPopupRoute] = useState<IRoute>();
+  const [isPopupScoreOpen, setIsPopupScorePassengerOpen] = useState(false);
 
   const handleClick = (event: google.maps.MapMouseEvent) => {
     const newMarker: google.maps.LatLngLiteral = {
@@ -67,6 +69,11 @@ const Map: React.FC = () => {
 
   const handlePopupPassengerSubmit = () => {
     setIsPopupPassengerOpen(false);
+  }
+
+  const handlePopupScorePassengerSubmit = () => {
+    setIsPopupScorePassengerOpen(false);
+    handleCancelRoute();
   }
 
   const generateRouteBack = async (mark : google.maps.LatLngLiteral[], time : number): Promise<void> => {
@@ -148,6 +155,12 @@ const Map: React.FC = () => {
       setPopupRoute(route);
     };
 
+    const finalizarViaje = async () => {
+      setShowButtons(true);
+      setIsPopupScorePassengerOpen(true);
+
+    };
+
   return (
   
   <LoadScript googleMapsApiKey="AIzaSyCBtOfuiyNgucAZs8gOa3l_BZSNOWTYK7c">
@@ -178,12 +191,19 @@ const Map: React.FC = () => {
       </button>
 
       <button
+        className={`py-2 px-4 text-sm bg-pink-700 text-white rounded hover:bg-white hover:text-teal-500 border border-white hover:border-transparent ${showButtons? 'block': 'hidden'}`}
+        onClick={finalizarViaje}>
+        Finalizar viaje
+      </button>
+
+      <button
         className={`py-2 px-4 text-sm bg-red-700 text-white rounded hover:bg-white hover:text-teal-500 border border-white hover:border-transparent ${showButtons? 'block': 'hidden'}`}
         onClick={handleCancelRoute}>
         Cancelar Ruta
       </button>
       {isPopupOpen && <PopupForm onClose={handlePopupSubmit} />}
       {isPopupPassengerOpen && <PopupRoutesPassenger onClose={handlePopupPassengerSubmit} isOpen={true} route={route} />}
+      {isPopupScoreOpen && <PopupScorePassengers onClose={handlePopupScorePassengerSubmit} isOpen={true}/>}
     </div>
 
   </div>
