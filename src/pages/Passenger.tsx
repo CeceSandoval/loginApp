@@ -5,7 +5,9 @@ import { userContext } from '../context/StateProvider';
 import NavbarPassenger from '../Components/NavbarPassenger';
 import PopupPassenger from '../Components/PopupPassenger';
 import MapPassenger from '../Components/MapPassenger';
+
 import PopupRoute from '../Components/PopupRoute';
+
 
 // En Passenger
 const Passenger = () => {
@@ -24,6 +26,7 @@ const Passenger = () => {
 
   return (
     <div>
+
       {isPopupUserOpen && <PopupPassenger onClose={() => setIsPopupUserOpen(false)} />}
       <NavbarPassenger onProfileClick={loadProfile} />
       {isPopupRouteOpen && (
@@ -36,6 +39,7 @@ const Passenger = () => {
         onRouteClick={loadRoute}
         setDrivers={setDrivers} // Pasar la función para actualizar drivers
       />
+
     </div>
   );
 };

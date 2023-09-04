@@ -1,9 +1,13 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from '@react-google-maps/api';
 import PopupForm from './PopupCrearRuta';
 import { userContext } from '../context/StateProvider';
 import axios from 'axios';
 import { IRoute} from '../@types/route';
+import { Iuser } from '../@types/user';
+import { toast } from 'react-toastify';
+import PopupRoutesPassenger from './PopupRoutesPassenger';
+import PopupScorePassengers from './PopupScorePassengers';
 
 
 const containerStyle = {
@@ -42,6 +46,11 @@ const Map: React.FC = () => {
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [routeData, setRouteData] = useState<any>({});
+  const [pasajeros, setPasajeros] = useState<Iuser[]>([]);
+  const [showButtons, setShowButtons] = useState(false);
+  const [isPopupPassengerOpen, setIsPopupPassengerOpen] = useState(false);
+  const [popupRoute, setPopupRoute] = useState<IRoute>();
+  const [isPopupScoreOpen, setIsPopupScorePassengerOpen] = useState(false);
 
   const handleClick = (event: google.maps.MapMouseEvent) => {
     const newMarker: google.maps.LatLngLiteral = {
@@ -58,12 +67,21 @@ const Map: React.FC = () => {
     generateRouteBack(markers, formData);
   };
 
+  const handlePopupPassengerSubmit = () => {
+    setIsPopupPassengerOpen(false);
+  }
+
+  const handlePopupScorePassengerSubmit = () => {
+    setIsPopupScorePassengerOpen(false);
+    handleCancelRoute();
+  }
+
   const generateRouteBack = async (mark : google.maps.LatLngLiteral[], time : number): Promise<void> => {
     try {
       console.log(markers)
       // Realizar la llamada a la API para registrar el usuario en el backend
       const Response = await axios.post(`http://localhost:8080/route/${state.session?.id}/${time}`, mark);
-      
+      setShowButtons(true);
       if (Response.status === 200) {
         console.log('Ruta creada:', Response.data);
         setRoute(prevRoute => ({ ...prevRoute, ...Response.data }));
@@ -110,6 +128,7 @@ const Map: React.FC = () => {
         console.log('Ruta eliminada:', Response.data);
         setMarkers([]);
         setDirections(null);
+        setShowButtons(false);
       } else {
         console.error('Error al eliminar ruta');
       }
@@ -117,6 +136,30 @@ const Map: React.FC = () => {
       console.error('Error en la llamada al backend:', error);
     }
   };
+
+    const obtenerRuta =async () => {
+      try {
+        const response = await axios.get(`http://localhost:8080/get-route/${state.session?.id}`);
+        console.log("ObtenerRuta" + JSON.stringify(response.data));
+        setRoute(response.data);
+      } catch (error) {
+        toast.warning("Aún no has creado una ruta",  {
+          autoClose: 4000,
+      });
+      }
+    }
+
+    const cargarPasajeros = async () => {
+      setShowButtons(true);
+      setIsPopupPassengerOpen(true);
+      setPopupRoute(route);
+    };
+
+    const finalizarViaje = async () => {
+      setShowButtons(true);
+      setIsPopupScorePassengerOpen(true);
+
+    };
 
   return (
   
@@ -142,11 +185,25 @@ const Map: React.FC = () => {
       </button>
 
       <button
-        className="py-2 px-4 text-sm bg-red-700 text-white rounded hover:bg-white hover:text-teal-500 border border-white hover:border-transparent"
+        className={`py-2 px-4 text-sm bg-green-700 text-white rounded hover:bg-white hover:text-teal-500 border border-white hover:border-transparent ${showButtons? 'block': 'hidden'}`}
+        onClick={cargarPasajeros}>
+        Solicitudes de pasajeros
+      </button>
+
+      <button
+        className={`py-2 px-4 text-sm bg-pink-700 text-white rounded hover:bg-white hover:text-teal-500 border border-white hover:border-transparent ${showButtons? 'block': 'hidden'}`}
+        onClick={finalizarViaje}>
+        Finalizar viaje
+      </button>
+
+      <button
+        className={`py-2 px-4 text-sm bg-red-700 text-white rounded hover:bg-white hover:text-teal-500 border border-white hover:border-transparent ${showButtons? 'block': 'hidden'}`}
         onClick={handleCancelRoute}>
         Cancelar Ruta
       </button>
       {isPopupOpen && <PopupForm onClose={handlePopupSubmit} />}
+      {isPopupPassengerOpen && <PopupRoutesPassenger onClose={handlePopupPassengerSubmit} isOpen={true} route={route} />}
+      {isPopupScoreOpen && <PopupScorePassengers onClose={handlePopupScorePassengerSubmit} isOpen={true}/>}
     </div>
 
   </div>
