@@ -20,9 +20,14 @@ const PopupForm: React.FC<PopupFormProps> = ({ onClose }) => {
         const fecha = formDataObject.fecha; // Aquí asumo que "fecha" es el nombre del campo en tu formulario
         const hora = formDataObject.hora; // Aquí asumo que "hora" es el nombre del campo en tu formulario
         const timestamp = new Date(`${fecha} ${hora}`).getTime()/1000; // Generar timestamp
-    
-      alert( typeof(timestamp)+' fdjsf ' + timestamp);
-      onClose(timestamp);
+        const currentTimestamp = Math.floor(Date.now() / 1000);
+        console.log(currentTimestamp);
+
+        if (timestamp < currentTimestamp) {
+          alert("Seleccione una fecha y hora validos")
+        } else {
+          onClose(timestamp);
+        }
     };
 
   return (

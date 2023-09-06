@@ -40,6 +40,8 @@ interface PopupScorePassengerProps {
     const { state } = useContext(userContext);
     const [users, setUsers] = useState<Iuser[]>([]);
     const [ratings, setRatings] = useState(users.map(() => 0));
+    const count: number[] = [];
+    const [data, setData] = useState<number[]>([]);
   
     useEffect(() => {
         fetchUsers();
@@ -49,9 +51,16 @@ interface PopupScorePassengerProps {
         try {
             const response = await axios.get(`http://localhost:8080/get-route/${state.session?.id}`);
             setUsers(response.data.passengers);
+            for(const us of response.data.passengers) {
+              const longResponse = await axios.get(`http://localhost:8080/score/count/${us.id}`);
+              count.push(longResponse.data);
+              console.log(count)
+            }
         } catch (error) {
             console.error('Error al obtener el user:', error);
         }
+        setData(count);
+        console.log("here"+data[0])
     };
 
     const handleSendClick = () => {
@@ -86,14 +95,16 @@ interface PopupScorePassengerProps {
         <thead>
             <tr>
               <th className="px-4 py-2">Nombre</th>
+              <th className="px-4 py-2">Cantidad de calificaciones</th>
               <th className="px-4 py-2">Calificación</th>
             </tr>
           </thead>
           <tbody>
           {users.map((user, index) => (
             <tr key={index}>
-              <td>{user.name}</td>
-              <td>
+              <td className="p-2 text-center">{user.name}</td>
+              <td className="p-2 text-center">{data[index]}</td>
+              <td className="p-2 text-center">
                 <StarRating
                   starsSelected={ratings[index]}
                   onStarClick={(rating) => handleStarClick(index, rating)}
