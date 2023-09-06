@@ -16,14 +16,19 @@ interface PopupScorePassengerProps {
     const stars = [1, 2, 3, 4, 5];
   
     return (
-      <div className="star-rating">
+      <div className="star-rating" style={{alignItems: 'center'}}>
         {stars.map((star) => (
           <span
             key={star}
             className={star <= starsSelected ? 'selected' : ''}
             onClick={() => onStarClick(star)}
-          >
-            ★
+            style={{
+              fontSize: '24px', // Cambia el tamaño de la estrella
+              color: star <= starsSelected ? 'red' : 'black', // Cambia el color de la estrella seleccionada a rojo
+              marginRight: '5px' // Agrega margen derecho entre las estrellas
+            }}
+          >	
+          &#9734;
           </span>
         ))}
       </div>

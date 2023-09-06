@@ -46,11 +46,12 @@ const Map: React.FC = () => {
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [routeData, setRouteData] = useState<any>({});
-  const [pasajeros, setPasajeros] = useState<Iuser[]>([]);
+  const [driver, setdriver] = useState<Iuser>();
   const [showButtons, setShowButtons] = useState(false);
   const [isPopupPassengerOpen, setIsPopupPassengerOpen] = useState(false);
   const [popupRoute, setPopupRoute] = useState<IRoute>();
   const [isPopupScoreOpen, setIsPopupScorePassengerOpen] = useState(false);
+  const [routeGenerated, setRouteGenerated] = useState(false);
 
   const handleClick = (event: google.maps.MapMouseEvent) => {
     const newMarker: google.maps.LatLngLiteral = {
@@ -94,6 +95,7 @@ const Map: React.FC = () => {
   };
 
   const handleGenerateRoute = () => {
+    console.log(markers)
     if (markers.length < 2) {
       alert('Por favor, seleccione al menos dos puntos en el mapa.');
       
@@ -112,7 +114,8 @@ const Map: React.FC = () => {
       (result, status) => {
         if (status === google.maps.DirectionsStatus.OK) {
           setDirections(result);
-          setIsPopupOpen(true)
+            setIsPopupOpen(true);
+          
         } else {
           console.error('Error al generar la ruta:', status);
         }
@@ -141,7 +144,16 @@ const Map: React.FC = () => {
       try {
         const response = await axios.get(`http://localhost:8080/get-route/${state.session?.id}`);
         console.log("ObtenerRuta" + JSON.stringify(response.data));
-        setRoute(response.data);
+        setdriver(response.data.driver)
+        if(response.data.id === null) {
+
+        } else {
+          setRoute(response.data);
+          setMarkers(response.data.points);
+          setShowButtons(true);
+          setRouteGenerated(true);
+          //handleGenerateRoute();
+        }
       } catch (error) {
         toast.warning("Aún no has creado una ruta",  {
           autoClose: 4000,
@@ -161,10 +173,17 @@ const Map: React.FC = () => {
 
     };
 
+    useEffect(() => {
+      obtenerRuta(); // Llama a obtenerRuta una vez al montar el componente
+    }, []);
+
   return (
   
   <LoadScript googleMapsApiKey="AIzaSyCBtOfuiyNgucAZs8gOa3l_BZSNOWTYK7c">
+    <div>
+    </div>
   <div className="flex flex-col h-screen">
+    <h2 style={{marginLeft: '20px'}} > Bienvenido conductor {driver?.name} </h2>
     <div className="mr-5 ml-5  w-95 h-70vh mx-auto mt-8 p-4 bg-white rounded-lg shadow-md">
       <GoogleMap mapContainerStyle={{ ...containerStyle, width: '100%' }} center={center} zoom={14} onClick={handleClick}>
         {markers.map((marker, index) => (
