@@ -7,19 +7,19 @@ import PopupPassenger from '../Components/PopupPassenger';
 import MapPassenger from '../Components/MapPassenger';
 
 import PopupRoute from '../Components/PopupRoute';
+import { Route } from 'react-router-dom';
 
 
-// En Passenger
 const Passenger = () => {
   const { state } = useContext(userContext);
   const [isPopupUserOpen, setIsPopupUserOpen] = useState(false);
   const [isPopupRouteOpen, setIsPopupRouteOpen] = useState(false);
   const [drivers, setDrivers] = useState<any[]>([]); // Definir el estado para drivers
-
+  const [ids, setIds] = useState<any[]>([]); // Definir el estado para ids routes
+  const passengerId = state.session?.id || ''; // Utiliza el userId desde state.session
   const loadProfile = () => {
     setIsPopupUserOpen(true);
   };
-
   const loadRoute = () => {
     setIsPopupRouteOpen(true);
   };
@@ -33,11 +33,14 @@ const Passenger = () => {
         <PopupRoute
           onClose={() => setIsPopupRouteOpen(false)}
           drivers={drivers} // Pasar drivers como prop
+          passengerId={passengerId}
+          routeId = {ids}
         />
       )}
       <MapPassenger
         onRouteClick={loadRoute}
         setDrivers={setDrivers} // Pasar la función para actualizar drivers
+        setIds={setIds}
       />
 
     </div>

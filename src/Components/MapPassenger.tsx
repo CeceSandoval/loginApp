@@ -8,6 +8,8 @@ import { ToastContainer } from 'react-toastify';
 import { toast } from 'react-toastify';
 import { string } from 'yup';
 import Driver from '../pages/Driver';
+import PopupRouteState from './PopupRouteState';
+import PopupScoreDrivers from './PopupScoreDrivers';
 
 
 const containerStyle = {
@@ -27,8 +29,9 @@ type LatLngPoint = {
 interface MapProps {
   onRouteClick: () => void;
   setDrivers: (drivers: any) => void;
+  setIds: (ids: any) => void;
 }
-const MapPassenger: React.FC<MapProps> = ({ onRouteClick, setDrivers  }) => {
+const MapPassenger: React.FC<MapProps> = ({ onRouteClick, setDrivers, setIds  }) => {
   const { state } = useContext(userContext);
   const [route, setRoute] = useState<IRoute>({
     id : null,
@@ -54,14 +57,18 @@ const MapPassenger: React.FC<MapProps> = ({ onRouteClick, setDrivers  }) => {
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
   const [routeData, setRouteData] = useState<any>({});
   const [ruta, setRuta] = useState<any>({});
+  const [routeId,setRouteId]= useState(string);
+  const [travelId,setTravelId]= useState(string);
   const [driversR, setDriversR] = useState<any>({});
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isPopupRouteStateOpen, setIsPopupRouteStateOpen] = useState(false);
+  const [isPopupScoreDriverOpen, setIsPopupScoreDriverOpen] = useState(false);
   const [showButtons, setShowButtons] = useState(false); 
   const [showButtonState, setShowButtonState] = useState(false); 
   const [showRoute1, setShowRoute1] = useState(false); 
   const [showRoute2, setShowRoute2] = useState(false); 
   const [showRoute3, setShowRoute3] = useState(false); 
-  const [showRoute4, setShowRoute4] = useState(false); 
+  const [showRoute4, setShowRoute4] = useState(false);
 
   interface PopupRouteProps {
     onRouteClick: () => void;
@@ -117,6 +124,8 @@ const MapPassenger: React.FC<MapProps> = ({ onRouteClick, setDrivers  }) => {
       
       if (Response.status === 200) {
         console.log('Ruta creada:', Response.data);
+
+        setTravelId(Response.data.id)<
         setRoute(prevRoute => ({ ...prevRoute, ...Response.data }));
         const routeId = Response.data.id;
         findRoutes(routeId);
@@ -135,12 +144,13 @@ const MapPassenger: React.FC<MapProps> = ({ onRouteClick, setDrivers  }) => {
       if (Response.status === 200) {
         const routes = Response.data;
         const length = routes.length;
-  
+        console.log(JSON.stringify(Response.data));
         if (length > 0) {
           setShowButtons(true);
           setShowButtonState(true);
           setShowRoute1(true);
-  
+          
+          const Ids: any[] = [];
           const rutas: any[] = [];
           const drivers: any[] = [];
   
@@ -160,8 +170,12 @@ const MapPassenger: React.FC<MapProps> = ({ onRouteClick, setDrivers  }) => {
               carModel: Response.data[i].driver.carModel
             };
             drivers.push(driver);
+
+            const idss= {
+              id: Response.data[i].id
+            };
+            Ids.push(idss);
           }
-  
           // Mostrar las rutas según la cantidad disponible
           if (length > 1) {
             setShowRoute2(true);
@@ -177,7 +191,9 @@ const MapPassenger: React.FC<MapProps> = ({ onRouteClick, setDrivers  }) => {
           setRuta(rutas)
           setDriversR(drivers);
           setDrivers(drivers[0]);
+          setIds(Ids[0]);
 
+          console.log('Ids:', Ids);
           console.log('Rutas:', rutas);
           console.log('drivers:', drivers);
           console.log('DriversinFInd:', driversR);
@@ -299,6 +315,18 @@ const MapPassenger: React.FC<MapProps> = ({ onRouteClick, setDrivers  }) => {
       }
     );
 }
+const routeState = async (): Promise<void> => {
+  try {
+    const Response = await axios.get(`http://localhost:8080/travel/${state.session?.id}/${travelId}`); ///passenger/routes/{sessionId}/{routeId}
+    if (Response.status === 200) {
+      
+    } else {
+      console.error('Ha ocurrido un error');
+    }
+  } catch (error) {
+    console.error('Error en la llamada al backend:', error);
+  }
+};
 
 const handleCancelRoute = async (): Promise<void> => {
     try {
@@ -319,6 +347,19 @@ const handleCancelRoute = async (): Promise<void> => {
     } catch (error) {
       console.error('Error en la llamada al backend:', error);
     }
+  };
+  const handlePopupRouteStateSubmit = () => {
+    setIsPopupRouteStateOpen(false);
+  }
+  const handlePopupScoreDriverSubmit = () => {
+    setIsPopupScoreDriverOpen(false);
+    handleCancelRoute();
+  }
+
+  const finalizarViaje = async () => {
+    setShowButtons(true);
+    setIsPopupScoreDriverOpen(true);
+
   };
 
   return (
@@ -389,18 +430,23 @@ const handleCancelRoute = async (): Promise<void> => {
       <button
           className={`ml-5 py-2 px-4 text-sm bg-green-700 text-white rounded hover:bg-white hover:text-teal-500 border border-white hover:border-transparent
                       ${showButtonState ? 'block' : 'hidden'}`}
-          onClick={handleCancelRoute}>
+          onClick={routeState}>
           Estado de Ruta
       </button>
-
+      <button
+        className={`py-2 px-4 text-sm bg-pink-700 text-white rounded hover:bg-white hover:text-teal-500 border border-white hover:border-transparent ${showButtons? 'block': 'hidden'}`}
+        onClick={finalizarViaje}>
+        Finalizar viaje
+      </button>
       <button
           className="ml-5 py-2 px-4 text-sm bg-red-700 text-white rounded hover:bg-white hover:text-teal-500 border border-white hover:border-transparent"
           onClick={handleCancelRoute}>
           Cancelar Ruta
       </button>
       
-      
         {isPopupOpen && <PopupForm onClose={handlePopupSubmit} />}
+        {isPopupRouteStateOpen && <PopupRouteState onClose={handlePopupRouteStateSubmit} isOpen={true} travelId={travelId} />}
+        {isPopupScoreDriverOpen && <PopupScoreDrivers onClose={handlePopupScoreDriverSubmit} isOpen={true}/>}
     </div>
     
 </div>

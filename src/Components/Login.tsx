@@ -28,9 +28,6 @@ const Login = () => {
                 ID Facial Único: ${response.facialId}
                 Data: ${JSON.stringify(response.payload)}
           `);
-
-      
-      alert("Has iniciado sesión exitosamente");
       console.log(response.payload);
       
       handleLoginBack(response.facialId);
@@ -53,9 +50,9 @@ const Login = () => {
         userId: Response.data.userId,
         userType: Response.data.userType,
       }
+      
       if (Response.status === 200) {
         dispatch({ type: actionTypes.SET_SESSION, session: data});
-        console.log('Sesión iniciada:', Response.data);
       } else {
         console.error('Error al iniciar sesión');
       }

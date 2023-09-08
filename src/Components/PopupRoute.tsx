@@ -5,18 +5,20 @@ import axios from 'axios';
 interface PopupRouteProps {
   onClose: () => void;
   drivers: any;
+  passengerId: string;
+  routeId: any;
 }
 
-const PopupRoute: React.FC<PopupRouteProps> = ({ onClose, drivers }) => {
+const PopupRoute: React.FC<PopupRouteProps> = ({ onClose, drivers, passengerId, routeId }) => {
 
-
-    console.log(JSON.stringify(drivers));
-    console.log('popup: '+drivers);
   const onChooseRoute = async (): Promise<void> => {
     try {
-      const response = await axios.get(`localhost:8080/passenger/select-route/{uuid-pasajero}/{ruta-conductor}`);
+      const Response = await axios.put(`http://localhost:8080/passenger/select-route/${passengerId}/${routeId.id}`);
+      if (Response.status === 200) {
+        alert('Ruta seleccionada con éxito, recuerde revisar el estado solicitud de su ruta')
+      }
     } catch (error) {
-      console.error('Error al obtener el usuario:', error);
+      console.error('Hubo un error al seleccionar la ruta', error);
     }
   }
 
