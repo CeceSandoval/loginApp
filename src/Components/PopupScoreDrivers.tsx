@@ -7,6 +7,8 @@ import { IRoute } from "../@types/route";
 interface PopupScoreDriversProps {
     isOpen: boolean;
     onClose: () => void;
+    driverId: string;
+    driverName: string;
   }
 
   const StarRating: React.FC<{ starsSelected: number; onStarClick: (rating: number) => void }> = ({
@@ -35,56 +37,33 @@ interface PopupScoreDriversProps {
     );
   };
 
-  const  PopupScoreDrivers: React.FC< PopupScoreDriversProps> = ({ onClose })=> {
-  
+  const  PopupScoreDrivers: React.FC<PopupScoreDriversProps> = ({ onClose, driverId, driverName })=> {
+    console.log(driverId);
     const { state } = useContext(userContext);
     const [users, setUsers] = useState<Iuser[]>([]);
-    const [ratings, setRatings] = useState(users.map(() => 0));
+    const [rating, setRating] = useState(0);
+    const [scores, setScores] = useState(0);
     const count: number[] = [];
     const [data, setData] = useState<number[]>([]);
   
-    useEffect(() => {
-        fetchUsers();
-    }, []); // El segundo argumento [] hace que este efecto se ejecute solo una vez al montar el componente
-  
-    const fetchUsers = async () => {
-        try {
-            const response = await axios.get(`http://localhost:8080/get-route/${state.session?.id}`);
-            setUsers(response.data.passengers);
-            for(const us of response.data.passengers) {
-              const longResponse = await axios.get(`http://localhost:8080/score/count/${us.id}`);
-              count.push(longResponse.data);
-              console.log(count)
-            }
-        } catch (error) {
-            console.error('Error al obtener el user:', error);
-        }
-        setData(count);
-        console.log("here"+data[0])
-    };
 
     const handleSendClick = () => {
-        users.forEach((user, index) => {
-          const userId = user.id;
-          const score = ratings[index];
     
           axios
-            .put(`http://localhost:8080/score/${state.session?.id}/${userId}/${score}`)
+            .put(`http://localhost:8080/score/${state.session?.id}/${driverId}/${rating}`)
             .then((response) => {
               // Manejar la respuesta del servidor si es necesario
             })
             .catch((error) => {
               // Manejar errores si es necesario
             });
-        });
-    
+
         onClose();
       };
 
-      const handleStarClick = (index: number, rating: number) => {
-        const newRatings = [...ratings];
-        newRatings[index] = rating;
-        setRatings(newRatings);
+      const handleStarClick = (rating: number) => {
+        setRating(rating);
+        console.log(rating);
       };
 
     return (
@@ -100,18 +79,17 @@ interface PopupScoreDriversProps {
             </tr>
           </thead>
           <tbody>
-          {users.map((user, index) => (
-            <tr key={index}>
-              <td className="p-2 text-center">{user.name}</td>
-              <td className="p-2 text-center">{data[index]}</td>
+         
+            <tr >
+              <td className="p-2 text-center">{driverName}</td>
+              <td className="p-2 text-center">{}</td>
               <td className="p-2 text-center">
                 <StarRating
-                  starsSelected={ratings[index]}
-                  onStarClick={(rating) => handleStarClick(index, rating)}
+                  starsSelected={rating}
+                  onStarClick={(rating) => handleStarClick(rating)}
                 />
               </td>
             </tr>
-          ))}
         </tbody>
         </table>
         <button
@@ -125,5 +103,6 @@ interface PopupScoreDriversProps {
     </div>
     );
   };
+  
   
   export default PopupScoreDrivers;

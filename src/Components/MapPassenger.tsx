@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect} from 'react';
 import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from '@react-google-maps/api';
 import PopupForm from './PopupCrearRuta';
 import { userContext } from '../context/StateProvider';
@@ -10,6 +10,9 @@ import { string } from 'yup';
 import Driver from '../pages/Driver';
 import PopupRouteState from './PopupRouteState';
 import PopupScoreDrivers from './PopupScoreDrivers';
+import Drivers from './Drivers';
+import Passenger from '../pages/Passenger';
+import { Iuser } from '../@types/user';
 
 
 const containerStyle = {
@@ -52,14 +55,29 @@ const MapPassenger: React.FC<MapProps> = ({ onRouteClick, setDrivers, setIds  })
     },
     passengers : [], 
   });
-  
+
+  useEffect(() => {
+    axios.get(`http://localhost:8080/passenger/${state.session?.id}`)
+      .then(response => {
+        // Accede a los datos dentro de AxiosResponse usando response.data
+        const { name } = response.data;
+        console.log(name);
+        setPassengerName(name); // Actualiza el nombre del pasajero
+      })
+      .catch(error => {
+        console.error("Error al obtener el nombre del pasajero:", error);
+      });
+  }, []);
+
   const [markers, setMarkers] = useState<google.maps.LatLngLiteral[]>([]);
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
+  const [passengerName, setPassengerName] = useState("");
   const [routeData, setRouteData] = useState<any>({});
   const [ruta, setRuta] = useState<any>({});
   const [routeId,setRouteId]= useState(string);
   const [travelId,setTravelId]= useState(string);
-  const [driversR, setDriversR] = useState<any>({});
+  const [driverId,setDriverId]= useState("");
+  const [driverName,setDriverName]= useState("");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isPopupRouteStateOpen, setIsPopupRouteStateOpen] = useState(false);
   const [isPopupScoreDriverOpen, setIsPopupScoreDriverOpen] = useState(false);
@@ -69,7 +87,8 @@ const MapPassenger: React.FC<MapProps> = ({ onRouteClick, setDrivers, setIds  })
   const [showRoute2, setShowRoute2] = useState(false); 
   const [showRoute3, setShowRoute3] = useState(false); 
   const [showRoute4, setShowRoute4] = useState(false);
-
+  const [driversArray, setDriversArray] = useState<any[]>([]); // Definir el estado para drivers
+  const [idsArray, setIdsArray] = useState<any[]>([]); // Definir el estado para ids routes
   interface PopupRouteProps {
     onRouteClick: () => void;
   }
@@ -103,7 +122,7 @@ const MapPassenger: React.FC<MapProps> = ({ onRouteClick, setDrivers, setIds  })
         (result, status) => {
         if (status === google.maps.DirectionsStatus.OK) {
             setDirections(result);
-            setIsPopupOpen(true);
+            setIsPopupOpen(true)
         } else {
             console.error('Error al generar la ruta:', status);
         }
@@ -164,6 +183,7 @@ const MapPassenger: React.FC<MapProps> = ({ onRouteClick, setDrivers, setIds  })
   
             // Obtener información del conductor para cada ruta
             const driver = {
+              id: Response.data[i].driver.id,
               name: Response.data[i].driver.name,
               email: Response.data[i].driver.email,
               licensePlate: Response.data[i].driver.licensePlate,
@@ -189,14 +209,14 @@ const MapPassenger: React.FC<MapProps> = ({ onRouteClick, setDrivers, setIds  })
   
 
           setRuta(rutas)
-          setDriversR(drivers);
           setDrivers(drivers[0]);
+          setDriversArray(drivers);
+          setIdsArray(Ids);
           setIds(Ids[0]);
 
           console.log('Ids:', Ids);
           console.log('Rutas:', rutas);
           console.log('drivers:', drivers);
-          console.log('DriversinFInd:', driversR);
           
         } else {
           alert('Lo sentimos, no hay rutas disponibles');
@@ -213,8 +233,10 @@ const MapPassenger: React.FC<MapProps> = ({ onRouteClick, setDrivers, setIds  })
 
     const onRenderRoute1 = async (): Promise<void> => {
 
-  
-          setMarkers(ruta[0]);
+          setDrivers(driversArray[0]);
+          setIds(idsArray[0]);
+          setDriverName(driversArray[0].name);
+          setDriverId(driversArray[0].id);
           const combinedRoute = ruta[0].map((point:any) => ({
             location: new google.maps.LatLng(point.lat, point.lng),
             stopover: true
@@ -239,7 +261,10 @@ const MapPassenger: React.FC<MapProps> = ({ onRouteClick, setDrivers, setIds  })
       }
       const onRenderRoute2 = async (): Promise<void> => {
 
-  
+        setDrivers(driversArray[1]);
+        setIds(idsArray[1]);
+        setDriverName(driversArray[1].name);
+        setDriverId(driversArray[1].id);
         setMarkers(ruta[1]);
         const combinedRoute = ruta[1].map((point:any) => ({
           location: new google.maps.LatLng(point.lat, point.lng),
@@ -265,7 +290,10 @@ const MapPassenger: React.FC<MapProps> = ({ onRouteClick, setDrivers, setIds  })
     }
     const onRenderRoute3 = async (): Promise<void> => {
 
-  
+      setDrivers(driversArray[2]);
+      setIds(idsArray[2]);
+      setDriverName(driversArray[2].name);
+      setDriverId(driversArray[2].id);
       setMarkers(ruta[2]);
       const combinedRoute = ruta[2].map((point:any) => ({
         location: new google.maps.LatLng(point.lat, point.lng),
@@ -291,7 +319,11 @@ const MapPassenger: React.FC<MapProps> = ({ onRouteClick, setDrivers, setIds  })
   }
   const onRenderRoute4 = async (): Promise<void> => {
 
-  
+    
+    setDrivers(driversArray[3]);
+    setIds(idsArray[3]);
+    setDriverName(driversArray[3].name);
+    setDriverId(driversArray[3].id);
     setMarkers(ruta[3]);
     const combinedRoute = ruta[3].map((point:any) => ({
       location: new google.maps.LatLng(point.lat, point.lng),
@@ -315,17 +347,28 @@ const MapPassenger: React.FC<MapProps> = ({ onRouteClick, setDrivers, setIds  })
       }
     );
 }
+const onRenderMyTravel = async (): Promise<void> => {
+  const [origin, destination] = markers;
+  
+    const directionsService = new google.maps.DirectionsService();
+
+    directionsService.route(
+        {
+            origin,
+            destination,
+            travelMode: google.maps.TravelMode.DRIVING,
+        },
+        (result, status) => {
+        if (status === google.maps.DirectionsStatus.OK) {
+            setDirections(result);
+        } else {
+            console.error('Error al generar la ruta:', status);
+        }
+        }
+    );
+}
 const routeState = async (): Promise<void> => {
-  try {
-    const Response = await axios.get(`http://localhost:8080/travel/${state.session?.id}/${travelId}`); ///passenger/routes/{sessionId}/{routeId}
-    if (Response.status === 200) {
-      
-    } else {
-      console.error('Ha ocurrido un error');
-    }
-  } catch (error) {
-    console.error('Error en la llamada al backend:', error);
-  }
+  setIsPopupRouteStateOpen(true);
 };
 
 const handleCancelRoute = async (): Promise<void> => {
@@ -366,6 +409,7 @@ const handleCancelRoute = async (): Promise<void> => {
   
   <LoadScript googleMapsApiKey="AIzaSyCBtOfuiyNgucAZs8gOa3l_BZSNOWTYK7c">
   <div className="flex flex-col h-screen">
+  <h2 style={{marginLeft: '20px'}} > Bienvenido Pasajero {passengerName} </h2>
   <div className={`mr-5 ml-5 w-95 mx-auto mt-8 p-4 bg-white rounded-lg shadow-md ${directions ? 'narrowMap' : ''}`}>
     <div className="flex"> {/* Nuevo div para los botones */}
       <GoogleMap mapContainerStyle={{ ...containerStyle, width: showButtons ? '90%' : '100%' }} center={center} zoom={14} onClick={handleClick}>
@@ -379,6 +423,9 @@ const handleCancelRoute = async (): Promise<void> => {
       </GoogleMap>
 
       <div className={`mt-4 flex flex-col mx-4 ${showButtons ? 'block' : 'hidden'}`}>
+          <button className={`relative  my-2 py-2 px-4 text-sm bg-blue-500 text-white rounded hover:bg-white hover:text-green-500 border border-white hover:border-transparent`} onClick={onRenderMyTravel}>
+            Tus Ubicaciones
+          </button>
         <h1 className='bold'>Rutas Disponibles</h1>
         <div className={`flex items-center ${showRoute1 ? 'block' : 'hidden'}`}>  {/* Contenedor para alinear los botones horizontalmente */}
           <button className={`relative  my-2 py-2 px-4 text-sm bg-blue-500 text-white rounded hover:bg-white hover:text-green-500 border border-white hover:border-transparent`} onClick={onRenderRoute1}>
@@ -446,7 +493,7 @@ const handleCancelRoute = async (): Promise<void> => {
       
         {isPopupOpen && <PopupForm onClose={handlePopupSubmit} />}
         {isPopupRouteStateOpen && <PopupRouteState onClose={handlePopupRouteStateSubmit} isOpen={true} travelId={travelId} />}
-        {isPopupScoreDriverOpen && <PopupScoreDrivers onClose={handlePopupScoreDriverSubmit} isOpen={true}/>}
+        {isPopupScoreDriverOpen && <PopupScoreDrivers onClose={handlePopupScoreDriverSubmit} isOpen={true} driverId={driverId} driverName={driverName}/>}
     </div>
     
 </div>
