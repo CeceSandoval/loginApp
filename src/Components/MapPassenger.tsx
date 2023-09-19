@@ -76,7 +76,7 @@ const MapPassenger: React.FC<MapProps> = ({ onRouteClick, setDrivers, setIds  })
   const [ruta, setRuta] = useState<any>({});
   const [routeId,setRouteId]= useState(string);
   const [travelId,setTravelId]= useState(string);
-  const [driverId,setDriverId]= useState("");
+  const [driverId,setDriverId]= useState(string);
   const [driverName,setDriverName]= useState("");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isPopupRouteStateOpen, setIsPopupRouteStateOpen] = useState(false);
@@ -400,6 +400,7 @@ const handleCancelRoute = async (): Promise<void> => {
   }
 
   const finalizarViaje = async () => {
+    console.log("DRIVER ID" +driverId)
     setShowButtons(true);
     setIsPopupScoreDriverOpen(true);
 

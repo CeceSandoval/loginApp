@@ -43,10 +43,22 @@ interface PopupScoreDriversProps {
     const [users, setUsers] = useState<Iuser[]>([]);
     const [rating, setRating] = useState(0);
     const [scores, setScores] = useState(0);
-    const count: number[] = [];
-    const [data, setData] = useState<number[]>([]);
+    const count: number = 0;
+    const [data, setData] = useState<number>();
   
+    useEffect(() => {
+      fetchUsers();
+  }, []); // El segundo argumento [] hace que este efecto se ejecute solo una vez al montar el componente
 
+  const fetchUsers = async () => {
+      try {
+            const longResponse = await axios.get(`http://localhost:8080/score/count/${us.id}`);
+            count.push(longResponse.data);
+      } catch (error) {
+          console.error('Error al obtener el user:', error);
+      }
+      setData(count);
+  };
     const handleSendClick = () => {
     
           axios
@@ -82,7 +94,7 @@ interface PopupScoreDriversProps {
          
             <tr >
               <td className="p-2 text-center">{driverName}</td>
-              <td className="p-2 text-center">{}</td>
+              <td className="p-2 text-center">{data}</td>
               <td className="p-2 text-center">
                 <StarRating
                   starsSelected={rating}
