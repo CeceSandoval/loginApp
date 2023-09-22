@@ -52,6 +52,7 @@ const Map: React.FC = () => {
   const [popupRoute, setPopupRoute] = useState<IRoute>();
   const [isPopupScoreOpen, setIsPopupScorePassengerOpen] = useState(false);
   const [routeGenerated, setRouteGenerated] = useState(false);
+  const [timeRoute, setTimeRoute] = useState<number>();
 
   const handleClick = (event: google.maps.MapMouseEvent) => {
     const newMarker: google.maps.LatLngLiteral = {
@@ -86,6 +87,7 @@ const Map: React.FC = () => {
       if (Response.status === 200) {
         console.log('Ruta creada:', Response.data);
         setRoute(prevRoute => ({ ...prevRoute, ...Response.data }));
+        setTimeRoute(time);
       } else {
         console.error('Error al creaar ruta');
       }
@@ -132,6 +134,7 @@ const Map: React.FC = () => {
         setMarkers([]);
         setDirections(null);
         setShowButtons(false);
+        setTimeRoute(0);
       } else {
         console.error('Error al eliminar ruta');
       }
@@ -168,9 +171,13 @@ const Map: React.FC = () => {
     };
 
     const finalizarViaje = async () => {
-      setShowButtons(true);
-      setIsPopupScorePassengerOpen(true);
-
+      const currentTimestamp = Math.floor(Date.now() / 1000);
+      if(timeRoute > currentTimestamp) {
+        alert("No puedes finalzar un viaje que aún no ha empezado. Intenta cancelarlo");
+      } else {
+        setShowButtons(true);
+        setIsPopupScorePassengerOpen(true);
+      }
     };
 
     useEffect(() => {

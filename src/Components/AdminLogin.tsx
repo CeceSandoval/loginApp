@@ -27,8 +27,6 @@ const AdminLogin = () => {
       });
 
       const onSubmit = (data: Admin) => {
-        alert(JSON.stringify(data));
-        console.log("data:" + data)
         handleSignUp(data);
       };
 
@@ -41,7 +39,8 @@ const AdminLogin = () => {
               userId: response.data.userId,
               userType: response.data.userType,
             }
-            dispatch({ type: actionTypes.SET_SESSION, session: data});
+            console.log("Responde" + response)
+            //dispatch({ type: actionTypes.SET_SESSION, session: data});
             if (response.status === 200) {
               dispatch({ type: actionTypes.SET_SESSION, session : data});
               console.log('Usuario registrado exitosamente en el backend:', response.data);
@@ -49,8 +48,7 @@ const AdminLogin = () => {
               console.error('Error al registrar usuario en el backend');
             }
           } catch (error) {
-            console.error('Error en la llamada al backend:', error);
-            console.log(userData);
+            alert("No se pudo iniciar sesión. Vuelve a intentarlo");
           }
       }
 
