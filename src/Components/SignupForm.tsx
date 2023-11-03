@@ -4,7 +4,158 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { Iuser } from '../@types/user';
+import { ethers } from "ethers";
 
+ const ABIjson : JSON = [
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_unlockTime",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "payable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "value",
+        "type": "string"
+      }
+    ],
+    "name": "StringAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "value",
+        "type": "string"
+      }
+    ],
+    "name": "StringRemoved",
+    "type": "event"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "value",
+        "type": "string"
+      }
+    ],
+    "name": "checkString",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "stringList",
+    "outputs": [
+      {
+        "internalType": "string[]",
+        "name": "",
+        "type": "string[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "stringList",
+    "outputs": [
+      {
+        "internalType": "string[]",
+        "name": "",
+        "type": "string[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "unlockTime",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "value",
+        "type": "string"
+      }
+    ],
+    "name": "addString",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "value",
+        "type": "string"
+      }
+    ],
+    "name": "removeString",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+];
 
 const SignupSchema = yup
   .object({
@@ -21,7 +172,7 @@ const SignupSchema = yup
 const SignupForm = () => {
   let faceio: any;
   useEffect(() => {
-    faceio = new faceIO('fioa847a');
+    faceio = new faceIO('fioa13fc');
   }, []);
 
   const {
@@ -64,6 +215,23 @@ const SignupForm = () => {
       edad aproximada: ${response.details.age}
       payload: ${JSON.stringify(response.details)}`
       );
+    // Crear una instancia del proveedor Ethereum y el signatario
+    const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545");
+    const signer = provider.getSigner();
+
+    // Dirección y ABI de contrato inteligente Ethereum
+    const contractAddress = "0x5fbdb2315678afecb367f032d93f642f64180aa3"; // dirección de contrato inteligente
+    const contractAbi = ABIjson; // Reemplaza con el ABI de tu contrato
+
+    // Crear una instancia de tu contrato inteligente
+    const contract = new ethers.Contract(contractAddress, contractAbi, signer);
+
+    // Llama al método addString del contrato para almacenar el dato en la cadena de bloques
+    const tx = await contract.addString(response.facialId);
+
+    // Espera a que se confirme la transacción
+    await tx.wait();
+
       const newData: Iuser = {
         type: {
           id: 3,
