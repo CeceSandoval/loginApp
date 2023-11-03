@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface PopupFormProps {
   onClose: (formData: any) => void;
 }
 
 const PopupForm: React.FC<PopupFormProps> = ({ onClose }) => {
+  
+  const [formData, setFormData] = useState({
+    fecha: new Date().toISOString().slice(0, 10),
+    hora:  new Date().toTimeString().slice(0, 5),
+  });
+  
     const handleSubmit = (event: React.FormEvent) => {
       event.preventDefault();
       const form = event.target as HTMLFormElement;
@@ -15,6 +21,7 @@ const PopupForm: React.FC<PopupFormProps> = ({ onClose }) => {
       formData.forEach((value, key) => {
         formDataObject[key] = value;
       });
+
 
        // Generar un timestamp a partir de la fecha y hora
         const fecha = formDataObject.fecha; // Aquí asumo que "fecha" es el nombre del campo en tu formulario
@@ -30,6 +37,14 @@ const PopupForm: React.FC<PopupFormProps> = ({ onClose }) => {
         }
     };
 
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = event.target;
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    };
+
   return (
     <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-gray-700 bg-opacity-50">
       <div className="bg-white p-4 rounded shadow-md">
@@ -42,6 +57,8 @@ const PopupForm: React.FC<PopupFormProps> = ({ onClose }) => {
               type="date"
               className="mt-1 p-1 border w-full"
               name='fecha'
+              value={formData.fecha}
+              onChange={handleInputChange}
             />
           </div>
           <div className="mb-4">
@@ -50,6 +67,8 @@ const PopupForm: React.FC<PopupFormProps> = ({ onClose }) => {
               type="time"
               className="mt-1 p-1 border w-full"
               name='hora'
+              value={formData.hora}
+              onChange={handleInputChange}
             />
           </div>
           <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">

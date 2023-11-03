@@ -89,6 +89,7 @@ const MapPassenger: React.FC<MapProps> = ({ onRouteClick, setDrivers, setIds  })
   const [showRoute4, setShowRoute4] = useState(false);
   const [driversArray, setDriversArray] = useState<any[]>([]); // Definir el estado para drivers
   const [idsArray, setIdsArray] = useState<any[]>([]); // Definir el estado para ids routes
+  const [timeRoute, setTimeRoute] = useState<number>();
   interface PopupRouteProps {
     onRouteClick: () => void;
   }
@@ -148,6 +149,7 @@ const MapPassenger: React.FC<MapProps> = ({ onRouteClick, setDrivers, setIds  })
         setRoute(prevRoute => ({ ...prevRoute, ...Response.data }));
         const routeId = Response.data.id;
         findRoutes(routeId);
+        setTimeRoute(time);
       } else {
         console.error('Error al crear viaje');
       }
@@ -400,9 +402,13 @@ const handleCancelRoute = async (): Promise<void> => {
   }
 
   const finalizarViaje = async () => {
-    console.log("DRIVER ID" +driverId)
-    setShowButtons(true);
-    setIsPopupScoreDriverOpen(true);
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    if(timeRoute > currentTimestamp) {
+      alert("No puedes finalzar un viaje que aún no ha empezado. Intenta cancelarlo");
+    } else {
+      setShowButtons(true);
+      setIsPopupScoreDriverOpen(true);
+    }
 
   };
 
