@@ -414,7 +414,7 @@ const handleCancelRoute = async (): Promise<void> => {
 
   return (
   
-  <LoadScript googleMapsApiKey="AIzaSyCBtOfuiyNgucAZs8gOa3l_BZSNOWTYK7c">
+  <LoadScript googleMapsApiKey="GOOGLEAPAAAPAPAPPAPIII">
   <div className="flex flex-col h-screen">
   <h2 style={{marginLeft: '20px'}} > Bienvenido Pasajero {passengerName} </h2>
   <div className={`mr-5 ml-5 w-95 mx-auto mt-8 p-4 bg-white rounded-lg shadow-md ${directions ? 'narrowMap' : ''}`}>

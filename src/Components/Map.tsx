@@ -186,7 +186,7 @@ const Map: React.FC = () => {
 
   return (
   
-  <LoadScript googleMapsApiKey="AIzaSyCBtOfuiyNgucAZs8gOa3l_BZSNOWTYK7c">
+  <LoadScript googleMapsApiKey="GOOOGLEAPIKEYEEYEYEYEKEY">
     <div>
     </div>
   <div className="flex flex-col h-screen">
